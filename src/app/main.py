@@ -20,6 +20,7 @@ from .exceptions import (
     AuthenticationError,
     ResourceNotFoundError,
 )
+from .routes.connectivity import router as connectivity_router
 
 # Configure logging
 logging.basicConfig(
@@ -170,7 +171,7 @@ async def health_check() -> JSONResponse:
 API_V1_PREFIX: str = "/api/v1"
 
 # Import and include routers here
-# Example: app.include_router(some_router, prefix=API_V1_PREFIX)
+app.include_router(connectivity_router, prefix=API_V1_PREFIX)
 
 if __name__ == "__main__":
     import uvicorn

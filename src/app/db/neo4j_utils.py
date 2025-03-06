@@ -8,6 +8,8 @@ from typing import Any, Dict, Optional, Generator
 from fastapi import Depends
 from neo4j import GraphDatabase, Driver, Session, Transaction
 
+from app.core.config import neo4j_settings
+
 # Configure logging
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -22,12 +24,11 @@ def get_neo4j_driver() -> Generator[Driver, None, None]:
     Note:
         The driver is automatically closed when the generator is exhausted.
     """
-    # TODO: Load from environment variables
-    uri: str = "bolt://localhost:7687"
-    user: str = "neo4j"
-    password: str = "password"
-    
-    driver: Driver = GraphDatabase.driver(uri, auth=(user, password))
+    logger.debug(f"Creating Neo4j driver with URI: {neo4j_settings.NEO4J_URI}")
+    driver: Driver = GraphDatabase.driver(
+        neo4j_settings.NEO4J_URI,
+        auth=(neo4j_settings.NEO4J_USERNAME, neo4j_settings.NEO4J_PASSWORD)
+    )
     try:
         yield driver
     finally:
@@ -51,7 +52,7 @@ def get_neo4j_session(driver: Driver = Neo4jDriverDependency) -> Generator[Sessi
     Note:
         The session is automatically closed when the generator is exhausted.
     """
-    session: Session = driver.session()
+    session: Session = driver.session(database=neo4j_settings.NEO4J_DATABASE)
     try:
         yield session
     finally:
