@@ -12,6 +12,7 @@ Required environment variables:
 """
 
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 from typing import Optional
 import logging
 
@@ -36,14 +37,15 @@ class Neo4jSettings(BaseSettings):
         NEO4J_PASSWORD (str): The password for database authentication
         NEO4J_DATABASE (str): The name of the database to connect to (defaults to "neo4j")
     """
+    model_config = ConfigDict(
+        env_file=".env",
+        case_sensitive=True
+    )
+    
     NEO4J_URI: str
     NEO4J_USERNAME: str
     NEO4J_PASSWORD: str
     NEO4J_DATABASE: str = "neo4j"  # Default database name
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
     def __init__(self, **kwargs):
         """

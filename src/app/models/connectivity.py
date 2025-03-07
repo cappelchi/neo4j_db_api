@@ -12,7 +12,7 @@ Example Response:
     }
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ConnectivityResponse(BaseModel):
@@ -37,17 +37,18 @@ class ConnectivityResponse(BaseModel):
             "message": "Successfully connected to Neo4j database"
         }
     """
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "status": True,
+                "message": "Successfully connected to Neo4j database"
+            }
+        }
+    )
+    
     status: bool = Field(
         description="True if connection is successful, False otherwise"
     )
     message: str = Field(
         description="Status message describing the result"
-    )
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "status": True,
-                "message": "Successfully connected to Neo4j database"
-            }
-        } 
+    ) 

@@ -77,10 +77,18 @@ async def check_connectivity() -> ConnectivityResponse:
         
         if not status:
             logger.error(f"Database connectivity check failed: {message}")
-            raise HTTPException(
-                status_code=503,
-                detail=message
-            )
+            # For expected errors (like service unavailable), return 503
+            if "service is unavailable" in message.lower() or "session expired" in message.lower():
+                raise HTTPException(
+                    status_code=503,
+                    detail=message
+                )
+            # For unexpected errors, return 500
+            else:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Internal server error while verifying database connectivity"
+                )
             
         logger.info("Database connectivity check successful")
         return ConnectivityResponse(
